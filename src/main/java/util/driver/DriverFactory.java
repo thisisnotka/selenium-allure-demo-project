@@ -19,6 +19,7 @@ public class DriverFactory {
                 return new ChromeDriver(chromeOptions);
             case "chrome-headless":
                 chromeOptions.addArguments("--headless");
+                chromeOptions.addArguments("--disable-dev-shm-usage");
                 chromeOptions.addArguments("--disable-gpu");
                 chromeOptions.addArguments("--no-sandbox");
                 chromeOptions.addArguments("start-maximized");
