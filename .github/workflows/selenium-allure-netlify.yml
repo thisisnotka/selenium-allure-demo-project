@@ -98,7 +98,7 @@ jobs:
     - name: Deploy to Netlify
       uses: nwtgck/actions-netlify@v1
       with:
-        publish-dir: ./allure-test-report
+        publish-dir: ./allure-report
         production-deploy: true
         deploy-message: "Deploying Allure Report"
         netlify-auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
