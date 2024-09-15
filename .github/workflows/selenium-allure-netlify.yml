@@ -35,14 +35,6 @@ jobs:
     - name: Set virtual display
       run: echo "DISPLAY=:99" >> $GITHUB_ENV
 
-    # Install Chrome
-    - name: Install Chrome
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y wget
-        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-        sudo apt install ./google-chrome-stable_current_amd64.deb
-
     # Install ChromeDriver
     - name: Install ChromeDriver
       run: |
@@ -84,7 +76,7 @@ jobs:
     - name: Download and unzip Allure history.zip
       if: env.history_zip_exists == 'true'
       run: |
-        HISTORY_ZIP_URL="https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/files/${ALLURE_HISTORY_ZIP}"
+        HISTORY_ZIP_URL="https://generated-allure-reports.netlify.app/${ALLURE_HISTORY_ZIP}"
         curl -L -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" -o ${ALLURE_HISTORY_ZIP} "${HISTORY_ZIP_URL}"
         unzip ${ALLURE_HISTORY_ZIP} -d allure-results
 
