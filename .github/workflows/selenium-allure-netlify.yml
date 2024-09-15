@@ -1,6 +1,5 @@
 name: Run Selenium Tests and Deploy Allure Report
 
-# Workflow is triggered manually using 'workflow_dispatch'
 on:
   workflow_dispatch:
 
@@ -9,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      ALLURE_VERSION: 2.30.0
       ALLURE_HISTORY_ZIP: history.zip
       CHROMEDRIVER_VERSION: 128.0.6613.137
       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
@@ -55,9 +55,10 @@ jobs:
     # Set up Allure
     - name: Install Allure
       run: |
-        sudo apt-add-repository ppa:qameta/allure
-        sudo apt-get update
-        sudo apt-get install allure
+        wget https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.zip
+        unzip allure-${ALLURE_VERSION}.zip
+        sudo mv allure-${ALLURE_VERSION} /opt/allure
+        sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
         allure --help
 
     # Run the tests
