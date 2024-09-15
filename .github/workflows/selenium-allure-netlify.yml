@@ -47,7 +47,7 @@ jobs:
     - name: Install Allure
       run: |
         ALLURE_VERSION=$(curl -sS https://api.github.com/repos/allure-framework/allure2/releases/latest | jq -r .tag_name)
-        wget https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-commandline-${ALLURE_VERSION}.zip
+        wget https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.zip
         unzip allure-commandline-${ALLURE_VERSION}.zip
         sudo mv allure-${ALLURE_VERSION}/bin/allure /usr/local/bin/
         sudo chmod +x /usr/local/bin/allure
