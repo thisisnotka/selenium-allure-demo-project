@@ -63,7 +63,7 @@ jobs:
 
     # Run the tests
     - name: Run Selenium tests
-      run: mvn install -DbrowserType=chrome-headless
+      run: mvn test -DbrowserType=chrome-headless
 
     # Download Allure history from Netlify (if exists)
     - name: Download Allure history from Netlify (if exists)
