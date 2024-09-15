@@ -45,3 +45,5 @@ This will start a local server on a random port and open the Allure report in yo
 <a href="https://repl.it/github/thisisnotka/selenium-allure-demo-project">
   <img alt="Run on Repl.it" src="https://repl.it/badge/github/thisisnotka/selenium-allure-demo-project" style="height: 40px; width: 190px;" />
 </a>
+
+![Run test and generate report](https://github.com/thisisnotka/selenium-allure-demo-project/actions/workflows/selenium-allure-netlify.yml/badge.svg)
