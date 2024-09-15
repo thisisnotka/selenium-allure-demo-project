@@ -65,32 +65,28 @@ jobs:
     - name: Run Selenium tests
       run: mvn test -DbrowserType=chrome-headless
 
-    # Check if Allure history folder exists on Netlify
-    - name: Check if Allure history exists on Netlify
-      id: check-history
+    # Check if Allure history zip exists on Netlify
+    - name: Check if Allure history.zip exists on Netlify
+      id: check-history-zip
       run: |
-        HISTORY_URL="https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/files/"
-        echo "Checking URL: $HISTORY_URL"
-        response=$(curl -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" "${HISTORY_URL}")
-        if echo "$response" | grep -q '"path": "/history/"'; then
-          echo "History folder exists on Netlify."
-          echo "history_exists=true" >> $GITHUB_ENV
+        HISTORY_ZIP_URL="https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/files/${ALLURE_HISTORY_ZIP}"
+        echo "Checking URL: $HISTORY_ZIP_URL"
+        HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" "${HISTORY_ZIP_URL}")
+        if [ "$HTTP_STATUS" -eq 200 ]; then
+          echo "History zip file exists on Netlify."
+          echo "history_zip_exists=true" >> $GITHUB_ENV
         else
-          echo "No history folder found on Netlify."
-          echo "history_exists=false" >> $GITHUB_ENV
+          echo "No history zip file found on Netlify."
+          echo "history_zip_exists=false" >> $GITHUB_ENV
         fi
 
-    # Download Allure history files if the folder exists
-    - name: Download Allure history files from Netlify
-      if: env.history_exists == 'true'
+    # Download and unzip Allure history.zip if it exists
+    - name: Download and unzip Allure history.zip
+      if: env.history_zip_exists == 'true'
       run: |
-        HISTORY_FILES_URL="https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/files/"
-        mkdir -p allure-results/history
-        response=$(curl -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" "${HISTORY_FILES_URL}")
-        echo "$response" | jq -r '.[] | select(.path | startswith("/history/")) | .path' | while read -r file; do
-          file_url="https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/files/${file}"
-          curl -L -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" -o "allure-results/history/$(basename $file)" "${file_url}"
-        done
+        HISTORY_ZIP_URL="https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/files/${ALLURE_HISTORY_ZIP}"
+        curl -L -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" -o ${ALLURE_HISTORY_ZIP} "${HISTORY_ZIP_URL}"
+        unzip ${ALLURE_HISTORY_ZIP} -d allure-results
 
     # Generate Allure report
     - name: Generate Allure report
