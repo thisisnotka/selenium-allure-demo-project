@@ -10,6 +10,7 @@ jobs:
 
     env:
       ALLURE_HISTORY_ZIP: allure-history.zip
+      CHROMEDRIVER_VERSION: 128.0.6613.137
       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
 
@@ -28,6 +29,22 @@ jobs:
     # Install required dependencies
     - name: Install dependencies
       run: mvn install
+
+    # Install Chrome
+    - name: Install Chrome
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget
+        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        sudo apt install ./google-chrome-stable_current_amd64.deb
+
+    # Install ChromeDriver from Chrome for Testing
+    - name: Install ChromeDriver
+      run: |
+        wget https://storage.googleapis.com/chrome-for-testing-public/${CHROMEDRIVER_VERSION}/linux64/chromedriver-linux64.zip
+        unzip chromedriver-linux64.zip
+        sudo mv chromedriver /usr/local/bin/
+        sudo chmod +x /usr/local/bin/chromedriver
 
     # Run the Selenium WebDriver tests
     - name: Run Selenium tests
