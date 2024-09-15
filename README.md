@@ -41,3 +41,7 @@ This will start a local server on a random port and open the Allure report in yo
 * TestNG: This project uses TestNG for test management.
 * Allure: The Allure reporting tool is integrated for generating detailed and interactive reports.
 * Page Object Model: The Page Object Model design pattern is used to create an object repository for web UI elements.
+
+<a href="https://repl.it/github/thisisnotka/selenium-allure-demo-project">
+  <img alt="Run on Repl.it" src="https://repl.it/badge/github/thisisnotka/selenium-allure-demo-project" style="height: 40px; width: 190px;" />
+</a>
