@@ -1,0 +1,88 @@
+name: Run Selenium Tests and Deploy Allure Report
+
+# Workflow is triggered manually using 'workflow_dispatch'
+on:
+  workflow_dispatch:
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      ALLURE_HISTORY_ZIP: allure-history.zip
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+
+    steps:
+    # Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Set up Java JDK 17
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+
+    # Install required dependencies
+    - name: Install dependencies
+      run: mvn install
+
+    # Run the Selenium WebDriver tests
+    - name: Run Selenium tests
+      run: mvn clean test -DexecutionType=headless
+
+    # Set up Allure report environment
+    - name: Install Allure
+      run: |
+        sudo apt-add-repository ppa:qameta/allure
+        sudo apt-get update
+        sudo apt-get install allure
+
+    # Download Allure history from Netlify (if exists)
+    - name: Download Allure history from Netlify (if exists)
+      run: |
+        NETLIFY_HISTORY_URL=https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID/files/history.zip
+        curl --fail -o $ALLURE_HISTORY_ZIP $NETLIFY_HISTORY_URL || echo "No history.zip found"
+        if [ -f "$ALLURE_HISTORY_ZIP" ]; then
+          unzip $ALLURE_HISTORY_ZIP
+          mv history target/allure-results/history
+        fi
+
+    # Generate Allure report
+    - name: Generate Allure report
+      run: |
+        allure generate target/allure-results --clean -o allure-report
+
+    # Zip the Allure history for future reference
+    - name: Zip Allure history
+      run: |
+        cd allure-report/history
+        zip -r $ALLURE_HISTORY_ZIP ./*
+
+    # Upload history.zip to Netlify for future test runs
+    - name: Upload Allure history to Netlify
+      run: |
+        curl -X POST -H "Authorization: Bearer $NETLIFY_AUTH_TOKEN" \
+        --upload-file $ALLURE_HISTORY_ZIP \
+        https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID/files/history.zip
+
+    # Deploy the Allure report to Netlify
+    - name: Deploy to Netlify
+      uses: nwtgck/actions-netlify@v1
+      with:
+        publish-dir: ./allure-report
+        production-deploy: true
+        deploy-message: "Deploying Allure Report"
+        netlify-auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        netlify-site-id: ${{ secrets.NETLIFY_SITE_ID }}
+
+    # Post Allure report link as a comment on pull request or push
+    - name: Post Netlify URL as comment
+      if: github.event_name == 'pull_request'
+      run: |
+        REPORT_URL=$(curl --silent https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID | jq -r .url)
+        curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -X POST \
+          -d "{\"body\": \"Allure Report deployed: $REPORT_URL\"}" \
+          https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments
