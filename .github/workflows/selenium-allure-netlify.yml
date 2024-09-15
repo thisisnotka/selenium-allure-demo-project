@@ -7,10 +7,6 @@ jobs:
   test-and-deploy:
     runs-on: ubuntu-latest
 
-  container:
-    image: openjdk:17-jdk-slim  # You can use any image here, like a custom one
-    options: --entrypoint /bin/bash  # Optional: If you need to change the default entrypoint
-
     env:
       ALLURE_VERSION: 2.30.0
       ALLURE_HISTORY_ZIP: history.zip
