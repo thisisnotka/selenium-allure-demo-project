@@ -38,10 +38,7 @@ public class CartTest extends BaseTest {
             movieFolder.mkdirs();
         }
 
-        screenRecorder = new VideoRecorder(GraphicsEnvironment
-                .getLocalGraphicsEnvironment()
-                .getDefaultScreenDevice()
-                .getDefaultConfiguration(), method.getName(), movieFolder);
+        screenRecorder = new VideoRecorder(method.getName(), movieFolder);
         screenRecorder.start();
     }
 
@@ -65,9 +62,7 @@ public class CartTest extends BaseTest {
     @AfterMethod
     public void teardown(Method method) throws Exception {
         screenRecorder.stop();
-        File videoFile = new File(movieFolderPathString + method.getName() + ".avi");
-        if (videoFile.exists()) {
-            Allure.addAttachment("Video about test execution", FileUtils.openInputStream(videoFile));
-        }
+        screenRecorder.attachVideoToAllure();
+        driver.close();
     }
 }
