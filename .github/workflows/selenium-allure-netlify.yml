@@ -69,10 +69,10 @@ jobs:
     - name: Check if Allure history exists on Netlify
       id: check-history
       run: |
-        HISTORY_URL="https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/files/history/"
+        HISTORY_URL="https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/files/"
         echo "Checking URL: $HISTORY_URL"
-        HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" "${HISTORY_URL}")
-        if [ "$HTTP_STATUS" -eq 200 ]; then
+        response=$(curl -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" "${HISTORY_URL}")
+        if echo "$response" | grep -q '"path": "/history/"'; then
           echo "History folder exists on Netlify."
           echo "history_exists=true" >> $GITHUB_ENV
         else
@@ -80,19 +80,35 @@ jobs:
           echo "history_exists=false" >> $GITHUB_ENV
         fi
 
-    # Download Allure history folder if it exists
+    # Download Allure history files if the folder exists
     - name: Download Allure history files from Netlify
       if: env.history_exists == 'true'
       run: |
-        HISTORY_URL="https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/files/history/"
-        curl -L -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" -O ${HISTORY_URL}
+        HISTORY_FILES_URL="https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/files/"
         mkdir -p allure-results/history
-        cp -r history/* allure-results/history/
+        response=$(curl -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" "${HISTORY_FILES_URL}")
+        echo "$response" | jq -r '.[] | select(.path | startswith("/history/")) | .path' | while read -r file; do
+          file_url="https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/files/${file}"
+          curl -L -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" -o "allure-results/history/$(basename $file)" "${file_url}"
+        done
 
     # Generate Allure report
     - name: Generate Allure report
       run: |
         allure generate allure-results --clean -o allure-report
+
+    # Zip the Allure history folder
+    - name: Zip Allure history folder
+      run: |
+        cd allure-report
+        zip -r ${ALLURE_HISTORY_ZIP} history
+
+    # Upload Allure history zip to Netlify
+    - name: Upload Allure history zip to Netlify
+      run: |
+        curl -X POST -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" \
+        --data-binary "@allure-report/${ALLURE_HISTORY_ZIP}" \
+        "https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/files/${ALLURE_HISTORY_ZIP}"
 
     # Deploy the Allure report to Netlify
     - name: Deploy to Netlify
