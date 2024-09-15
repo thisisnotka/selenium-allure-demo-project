@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      ALLURE_HISTORY_ZIP: allure-history.zip
+      ALLURE_HISTORY_ZIP: history.zip
       CHROMEDRIVER_VERSION: 128.0.6613.137
       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
@@ -34,24 +34,27 @@ jobs:
         wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
         sudo apt install ./google-chrome-stable_current_amd64.deb
 
-    # Install ChromeDriver from Chrome for Testing
+    # Install ChromeDriver
     - name: Install ChromeDriver
       run: |
         wget https://storage.googleapis.com/chrome-for-testing-public/${CHROMEDRIVER_VERSION}/linux64/chromedriver-linux64.zip
         unzip chromedriver-linux64.zip
+        cd chromedriver-linux64
         sudo mv chromedriver /usr/local/bin/
         sudo chmod +x /usr/local/bin/chromedriver
 
-    # Run the Selenium WebDriver tests
-    - name: Run Selenium tests
-      run: mvn clean install -DexecutionType=chrome-headless
-
-    # Set up Allure report environment
+    # Set up Allure
     - name: Install Allure
       run: |
-        sudo apt-add-repository ppa:qameta/allure
-        sudo apt-get update
-        sudo apt-get install allure
+        ALLURE_VERSION=$(curl -sS https://api.github.com/repos/allure-framework/allure2/releases/latest | jq -r .tag_name)
+        wget https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-commandline-${ALLURE_VERSION}.zip
+        unzip allure-commandline-${ALLURE_VERSION}.zip
+        sudo mv allure-${ALLURE_VERSION}/bin/allure /usr/local/bin/
+        sudo chmod +x /usr/local/bin/allure
+
+    # Run the tests
+    - name: Run Selenium tests
+      run: mvn clean install -DexecutionType=chrome-headless
 
     # Download Allure history from Netlify (if exists)
     - name: Download Allure history from Netlify (if exists)
