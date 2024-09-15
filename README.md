@@ -19,24 +19,25 @@ Follow these steps to set up and run the project:
 
 2. **Open the Project**
 
-Launch IntelliJ IDEA. Open the project by selecting the cloned repository directory.
+   Launch IntelliJ IDEA. Open the project by selecting the cloned repository directory.
 
 3. **Run Tests**
-Type command to execute testSuite.xml
+
+   Type command to execute testSuite.xml
 ```
-   mvn clean install
+mvn clean install
 ``` 
 
 4. **Open Allure Report on localhost**
-Open the terminal in IntelliJ IDEA.
-Navigate to the project directory if not already there.
-Execute the following command to serve the Allure report:
+
+   Open the terminal in IntelliJ IDEA. Navigate to the project directory if not already there. Execute the following command to serve the Allure report:
 ``` 
 allure serve allure-results
 ``` 
+
 This will start a local server on a random port and open the Allure report in your default browser.
 
-## Additional Information
-TestNG: This project uses TestNG for test management.
-Allure: The Allure reporting tool is integrated for generating detailed and interactive reports.
-Page Object Model: The Page Object Model design pattern is used to create an object repository for web UI elements.
+## Additional information
+* TestNG: This project uses TestNG for test management.
+* Allure: The Allure reporting tool is integrated for generating detailed and interactive reports.
+* Page Object Model: The Page Object Model design pattern is used to create an object repository for web UI elements.
