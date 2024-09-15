@@ -69,21 +69,23 @@ jobs:
     - name: Check if Allure history exists on Netlify
       id: check-history
       run: |
-        HISTORY_URL="https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID/files/history/"
-        HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" -H "Authorization: Bearer $NETLIFY_AUTH_TOKEN" $HISTORY_URL)
+        HISTORY_URL="https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/files/history/"
+        echo "Checking URL: $HISTORY_URL"
+        HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" "${HISTORY_URL}")
         if [ "$HTTP_STATUS" -eq 200 ]; then
           echo "History folder exists on Netlify."
           echo "history_exists=true" >> $GITHUB_ENV
         else
           echo "No history folder found on Netlify."
           echo "history_exists=false" >> $GITHUB_ENV
+        fi
 
     # Download Allure history folder if it exists
     - name: Download Allure history files from Netlify
       if: env.history_exists == 'true'
       run: |
-        HISTORY_URL="https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID/files/history/"
-        curl -L -H "Authorization: Bearer $NETLIFY_AUTH_TOKEN" -O $HISTORY_URL
+        HISTORY_URL="https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/files/history/"
+        curl -L -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" -O ${HISTORY_URL}
         mkdir -p allure-results/history
         cp -r history/* allure-results/history/
 
