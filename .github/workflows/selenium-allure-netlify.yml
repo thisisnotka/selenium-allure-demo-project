@@ -26,10 +26,6 @@ jobs:
         java-version: '17'
         distribution: 'zulu'
 
-    # Install required dependencies
-    - name: Install dependencies
-      run: mvn install
-
     # Install Chrome
     - name: Install Chrome
       run: |
@@ -48,7 +44,7 @@ jobs:
 
     # Run the Selenium WebDriver tests
     - name: Run Selenium tests
-      run: mvn clean test -DexecutionType=chrome-headless
+      run: mvn clean install -DexecutionType=chrome-headless
 
     # Set up Allure report environment
     - name: Install Allure
