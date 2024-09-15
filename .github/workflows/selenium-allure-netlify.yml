@@ -55,11 +55,9 @@ jobs:
     # Set up Allure
     - name: Install Allure
       run: |
-        ALLURE_VERSION=$(curl -sS https://api.github.com/repos/allure-framework/allure2/releases/latest | jq -r .tag_name)
-        wget https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.zip
-        unzip allure-${ALLURE_VERSION}.zip
-        sudo mv allure-${ALLURE_VERSION}/bin/allure /usr/local/bin/
-        sudo chmod +x /usr/local/bin/allure
+        sudo apt-add-repository ppa:qameta/allure
+        sudo apt-get update
+        sudo apt-get install allure
         allure --help
 
     # Run the tests
