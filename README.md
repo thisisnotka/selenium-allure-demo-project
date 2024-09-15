@@ -46,4 +46,6 @@ This will start a local server on a random port and open the Allure report in yo
   <img alt="Run on Repl.it" src="https://repl.it/badge/github/thisisnotka/selenium-allure-demo-project" style="height: 40px; width: 190px;" />
 </a>
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/953785ec-f14f-4879-94ef-c7520c77ba5f/deploy-status)](https://app.netlify.com/sites/generated-allure-reports/deploys)
+
 ![Run test and generate report](https://github.com/thisisnotka/selenium-allure-demo-project/actions/workflows/selenium-allure-netlify.yml/badge.svg)
