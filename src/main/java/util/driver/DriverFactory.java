@@ -21,7 +21,8 @@ public class DriverFactory {
                 chromeOptions.addArguments("--headless");
                 chromeOptions.addArguments("--disable-gpu");
                 chromeOptions.addArguments("--no-sandbox");
-                chromeOptions.addArguments("start-maximized");
+                chromeOptions.addArguments("--disable-dev-shm-usage");
+                chromeOptions.addArguments("--remote-debugging-port=9222"); 
                 WebDriverManager.chromedriver().setup();
                 return new ChromeDriver(chromeOptions);
             case "firefox":
