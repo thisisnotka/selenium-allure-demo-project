@@ -89,6 +89,7 @@ jobs:
     # Upload history.zip to Netlify for future test runs
     - name: Upload Allure history to Netlify
       run: |
+        cd allure-report/history
         curl -X POST -H "Authorization: Bearer $NETLIFY_AUTH_TOKEN" \
         --upload-file $ALLURE_HISTORY_ZIP \
         https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID/files/history.zip
@@ -97,7 +98,7 @@ jobs:
     - name: Deploy to Netlify
       uses: nwtgck/actions-netlify@v1
       with:
-        publish-dir: ./allure-report
+        publish-dir: ./allure-test-report
         production-deploy: true
         deploy-message: "Deploying Allure Report"
         netlify-auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
