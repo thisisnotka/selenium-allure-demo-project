@@ -60,6 +60,7 @@ jobs:
         unzip allure-${ALLURE_VERSION}.zip
         sudo mv allure-${ALLURE_VERSION}/bin/allure /usr/local/bin/
         sudo chmod +x /usr/local/bin/allure
+        allure --help
 
     # Run the tests
     - name: Run Selenium tests
