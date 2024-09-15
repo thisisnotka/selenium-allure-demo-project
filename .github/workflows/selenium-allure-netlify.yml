@@ -31,7 +31,7 @@ jobs:
 
     # Run the Selenium WebDriver tests
     - name: Run Selenium tests
-      run: mvn clean test -DexecutionType=headless
+      run: mvn clean test -DexecutionType=chrome-headless
 
     # Set up Allure report environment
     - name: Install Allure
