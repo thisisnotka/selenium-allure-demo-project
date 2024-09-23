@@ -8,13 +8,23 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      ALLURE_VERSION: curl -s https://api.github.com/repos/allure-framework/allure2/releases/latest | jq -r '.tag_name'
-      CHROMEDRIVER_VERSION: curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json | jq -r '.channels.Stable.version'
+      ALLURE_VERSION: 2.30
+      CHROMEDRIVER_VERSION: 129.0.6668.58
       ALLURE_HISTORY_ZIP: history.zip
       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
 
     steps:
+    - name: Get latest Allure version
+      id: get_allure_version
+      run: |
+        echo "ALLURE_VERSION=$(curl -s https://api.github.com/repos/allure-framework/allure2/releases/latest | jq -r '.tag_name')" >> $GITHUB_ENV
+
+    - name: Get latest ChromeDriver version
+      id: get_chromedriver_version
+      run: |
+        echo "CHROMEDRIVER_VERSION=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json | jq -r '.channels.Stable.version')" >> $GITHUB_ENV
+    
     - name: Checkout repository
       uses: actions/checkout@v4
 
